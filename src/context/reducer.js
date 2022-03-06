@@ -42,7 +42,7 @@ const reducer = (state, action) => {
     }
     if (action.type === 'SET_ERROR') {
         return {
-            ...state, isLoading:false, isError:{show: true, message:action.payload}, isSuggestionLoading: false 
+            ...state, isLoading:false, isError:{show: true, message:action.payload}, isSuggestionLoading: false
         }
     }
     if (action.type === 'SET_SUGGESTIONS') {

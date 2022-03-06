@@ -44,46 +44,58 @@ export const AppProvider = ({children}) => {
   const fetchData = async (parameter) => {
     dispatch({type:'START_FETCH'});
     let url;
-    if (parameter === 'SET_CURRENT_WEATHER'){
-      url = `${currentWeatherUrl}${state.currentCity.id}?apikey=${APIKey}`;
-    }
-    if (parameter === 'SET_FORECAST') {
-      url = `${forecastUrl}${state.currentCity.id}?apikey=${APIKey}&metric=true`;
-    }
-    if (parameter === 'SET_GEO_LOCATION') {
-      url = `${geoLocationUrl}${APIKey}&q=${state.geoLocation.location}`;
-    }
-    try {
-      const response = await fetch(url);
-      if (response.status >= 200 && response.status <= 299){
-        const data = await response.json();
-        dispatch({type:parameter, payload:data});
-      } else {
-        dispatch({type:'SET_ERROR', payload:response.statusText});
+      if (parameter === 'SET_CURRENT_WEATHER'){
+        url = `${currentWeatherUrl}${state.currentCity.id}?apikey=${APIKey}`;
       }
-    } catch (error) {   
-      dispatch({type:'SET_ERROR', payload:error.message});
-    }
+      if (parameter === 'SET_FORECAST') {
+        url = `${forecastUrl}${state.currentCity.id}?apikey=${APIKey}&metric=true`;
+      }
+      if (parameter === 'SET_GEO_LOCATION') {
+        url = `${geoLocationUrl}${APIKey}&q=${state.geoLocation.location}`;
+      }
+      try {
+        const response = await fetch(url);
+        if (response.status >= 200 && response.status <= 299){
+          const data = await response.json();
+          dispatch({type:parameter, payload:data});
+        } else {
+          dispatch({type:'SET_ERROR', payload:response.statusText});
+        }
+      } catch (error) {   
+        dispatch({type:'SET_ERROR', payload:error.message});
+      }
   }
   const fetchSuggestions = async (controller) => {
     if (state.input){
       dispatch({type:'LOAD_SUGGESTIONS'});
-      try {
-        const response = await fetch(`${searchAutoCompleteUrl}${APIKey}&q=${state.input}`, {signal: controller.signal});
-        if (response.status >= 200 && response.status <= 299) {
-          const data = await response.json();
-          dispatch({type:'SET_SUGGESTIONS', payload:data});
-        } else {
-          dispatch({type:'SET_ERROR', payload:response.statusText});
+        try {
+          const response = await fetch(`${searchAutoCompleteUrl}${APIKey}&q=${state.input}`, {signal: controller.signal});
+          if (response.status >= 200 && response.status <= 299) {
+            const data = await response.json();
+            dispatch({type:'SET_SUGGESTIONS', payload:data});
+          } else {
+            dispatch({type:'SET_ERROR', payload:response.statusText});
+          }
+        } catch (error) {
+          if (error.name !== 'AbortError'){
+            dispatch({type:'SET_ERROR', payload:error.message});
+          }
         }
-      } catch (error) {
-        if (error.name !== 'AbortError'){
-          dispatch({type:'SET_ERROR', payload:error.message});
-        }
-      }
     } else {
       dispatch ({type:'STOP_SUGGESTION_LOADING'});
     }
+  }
+  const fetchFavorites = () => {
+      try {
+        dispatch({type:'START_FETCH_FAVORITES'});
+          state.favorites.forEach((city,i) => {
+            let url = `${currentWeatherUrl}${city.id}?apikey=${APIKey}`;
+            fetchFavorite(url, city, i);
+          });
+          dispatch({type:'FETCH_SUCCESS'});
+      } catch (error) {
+        dispatch({type:'SET_ERROR', payload:error.message});    
+      }
   }
   const setCurrentCity = (city) => {
     dispatch({type:'SET_CURRENT_CITY', payload:city});
@@ -101,18 +113,6 @@ export const AppProvider = ({children}) => {
     const response = await fetch(url);
     let data = await response.json();
     dispatch({type:'SET_FAVORITES_WEATHER', payload:{data, city, i}});
-  }
-  const fetchFavorites = () => {
-    try {
-      dispatch({type:'START_FETCH_FAVORITES'});
-        state.favorites.forEach((city,i) => {
-          let url = `${currentWeatherUrl}${city.id}?apikey=${APIKey}`;
-          fetchFavorite(url, city, i);
-        });
-        dispatch({type:'FETCH_SUCCESS'});
-    } catch (error) {
-      dispatch({type:'SET_ERROR', payload:error.message});    
-    }
   }
   const showTemp = (temp) => {
     if(state.isCelsius && temp) {

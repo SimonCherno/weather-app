@@ -30,22 +30,24 @@ const withNavbar = (Component, location) => {
                                 className="btn btn-outline-secondary"
                             >F</button>
                         </div>
-                        <div className="darkmode-switch">
-                            <div className="form-check form-switch">
-                                <input 
-                                    className="form-check-input" 
-                                    type="checkbox" 
-                                    role="switch" 
-                                    id="flexSwitch" 
-                                    checked={isDarkMode ? true : false} 
-                                    onChange={toggleTheme}
-                                />
-                                <label 
-                                    className="form-check-label" 
-                                    htmlFor="flexSwitch"
-                                >Dark Mode</label>
+                            <div className="form-check form-switch darkmode-switch">
+                                <div className="label-wrapper">
+                                    <label 
+                                        className="form-check-label" 
+                                        htmlFor="flexSwitch"
+                                        >Dark mode</label>
+                                </div>
+                                <div className="input-wrapper">
+                                    <input 
+                                        className="form-check-input input" 
+                                        type="checkbox" 
+                                        role="switch" 
+                                        id="flexSwitch" 
+                                        checked={isDarkMode ? true : false} 
+                                        onChange={toggleTheme}
+                                    />
+                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </nav>
