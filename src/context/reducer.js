@@ -169,7 +169,7 @@ const reducer = (state, action) => {
         if (keyNum === APIKeys.length - 1) {
             isError = {
                 show: true,
-                message: action.payload
+                message: 'out of keys'
             }
         } else {
             keyNum = state.keyNum + 1;

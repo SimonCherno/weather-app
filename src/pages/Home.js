@@ -6,6 +6,7 @@ import heart from '../assets/heart.svg';
 import heartFill from '../assets/heart-fill.svg';
 import search from '../assets/search.svg';
 import AutoComplete from '../components/AutoComplete';
+import { APIKeys } from '../assets/assets';
 
 const Home = () => {
   const {
@@ -22,6 +23,8 @@ const Home = () => {
     isSuggestionLoading,
     isTextError,
     isDarkMode,
+    changeApiKey,
+    keyNum,
   } = useAppContext();
   if (isLoading) {
     return <div className="main-loading-wrapper">
@@ -32,6 +35,7 @@ const Home = () => {
     return <div className='section-center section'>
       <h1>Ooops, something went wrong</h1>
       <p>{isError.message}</p>
+      {keyNum !== APIKeys.length - 1 && <button className='btn btn-outline-danger' onClick={changeApiKey}>Change api key ({keyNum + 1}/{APIKeys.length})</button>}
     </div>
   }
   return <div>

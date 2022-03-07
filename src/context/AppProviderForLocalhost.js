@@ -52,8 +52,9 @@ export const AppProvider = ({children}) => {
           const data = await response.json();
           dispatch({type:'SET_CITY_BY_GEO_LOCATION', payload:data});
         }else {
-          Promise.reject(response.statusText)
+          dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
         }
+        return;
       } catch (error) {
         dispatch({type:'SET_ERROR', payload:error.message});
       }
@@ -69,13 +70,14 @@ export const AppProvider = ({children}) => {
         const data = await currentWeather.value.json();
         dispatch({type:'SET_CURRENT_WEATHER', payload:data});
       } else {
-        Promise.reject(currentWeather.statusText)
+        dispatch({type:'CHANGE_API_KEY', payload:currentWeather.reason.message});
+        return;
       }
       if (forecast.status === 'fulfilled'){
         const data = await forecast.value.json();
         dispatch({type:'SET_FORECAST', payload:data});
       } else {
-        Promise.reject(forecast.statusText)
+        dispatch({type:'CHANGE_API_KEY', payload:forecast.reason.message});
       }
     })
     .catch((error) => {
@@ -91,7 +93,7 @@ export const AppProvider = ({children}) => {
           const data = await response.json();
           dispatch({type:'SET_SUGGESTIONS', payload:data});
         } else {
-          Promise.reject(response.statusText)
+          dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
         }
       } catch (error) {
         if (error.name !== 'AbortError'){
@@ -117,7 +119,7 @@ export const AppProvider = ({children}) => {
         const data = await response.json();
         dispatch({type:'SET_FAVORITES_WEATHER', payload:{data, city, i}});
       } else {
-        Promise.reject(response.statusText)
+        dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
       }
     } catch (error) {
       dispatch({type:'SET_ERROR', payload:error.message});
@@ -169,9 +171,6 @@ export const AppProvider = ({children}) => {
   const toggleTheme = () => {
     dispatch({type:'TOGGLE_THEME'});
   }
-  const changeApiKey = () => {
-    dispatch({type:'CHANGE_API_KEY'});
-  }
     // useEffects---------------------start----------------------
 
     useEffect(() => {
@@ -213,7 +212,6 @@ export const AppProvider = ({children}) => {
     showIcon,
     setIsTextError,
     toggleTheme,
-    changeApiKey,
   }}>{children}</AppContext.Provider>;
 };
 
