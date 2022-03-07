@@ -8,7 +8,7 @@ const withNavbar = (Component, location) => {
         return <>
             <nav className='navbar'>
                 <div className="container-fluid section-center">
-                    <h1>weather app2</h1>
+                    <h1>weather app</h1>
                     <div className="right-corner">
                         <div className="btn-group nav-btns">
                             <Link 
