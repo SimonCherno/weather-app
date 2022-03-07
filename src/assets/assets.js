@@ -1,4 +1,11 @@
-export const APIKey = 'pGRAM5ufgbzxjXRrI7IPlHelEKxBUZEc';
+export const APIKeys = [
+  'pGRAM5ufgbzxjXRrI7IPlHelEKxBUZEc', 
+  '8pDGSFuDVpHnYQsqqPCdp9M33iTQVOZA', 
+  'nFyG2dxmGA7iRDUMlSWlpSLged6VVh4V',
+  'SsfxMOvwzTppvfMpu4GtCk8ENs3pSAgm',
+  'S3yt53eqNHH8U1gDCrHccl2SxW7RaBsx',
+  'FtJ5cNeuBH16t8ZoS57bI2JhKzRwRoxH',
+];
 export const searchAutoCompleteUrl = "http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=";
 export const currentWeatherUrl = "http://dataservice.accuweather.com/currentconditions/v1/";
 export const forecastUrl = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/";

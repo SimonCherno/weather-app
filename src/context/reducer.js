@@ -1,3 +1,4 @@
+import { APIKeys } from "../assets/assets";
 const reducer = (state, action) => {
     if (action.type === 'SET_INPUT') {
         return {
@@ -132,11 +133,11 @@ const reducer = (state, action) => {
             ...state, geoLocation
         }
     }
-    if (action.type === 'SET_GEO_LOCATION'){
+    if (action.type === 'SET_CITY_BY_GEO_LOCATION'){
         const {Key:id, LocalizedName:label} = action.payload;
         const currentCity = {id, label};
         return {
-            ...state, isLoading:false, isError:{show: false, message:''}, currentCity
+            ...state, isLoading:false, isError:{show: false, message:''}, currentCity, geoLocation:{success: false, location:''}
         }
     }
     if (action.type === 'LOAD_SUGGESTIONS'){
@@ -157,6 +158,24 @@ const reducer = (state, action) => {
     if (action.type === 'TOGGLE_THEME'){
         return {
             ...state, isDarkMode: !state.isDarkMode
+        }
+    }
+    if (action.type === 'CHANGE_API_KEY'){
+        let keyNum = state.keyNum;
+        let isError = {
+            show: false,
+            message: ''
+        }
+        if (keyNum === APIKeys.length - 1) {
+            isError = {
+                show: true,
+                message: action.payload
+            }
+        } else {
+            keyNum = state.keyNum + 1;
+        }
+        return {
+            ...state, keyNum, isError
         }
     }
 };

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, createContext } from 'react';
-import { currentWeatherUrl, forecastUrl, searchAutoCompleteUrl, APIKey, defaultCity, geoLocationUrl } from '../assets/assets';
+import { currentWeatherUrl, forecastUrl, searchAutoCompleteUrl, APIKeys, defaultCity, geoLocationUrl } from '../assets/assets';
 import reducer from './reducer';
 
 const AppContext = createContext();
@@ -34,6 +34,7 @@ const initialState = {
   isSuggestionLoading: false,
   isTextError: false,
   isDarkMode: false,
+  keyNum: 0,
 }
 
 export const AppProvider = ({children}) => {
@@ -41,62 +42,90 @@ export const AppProvider = ({children}) => {
   const setInput = (input) => {
     dispatch({type:'SET_INPUT', payload:input});
   }
-  const fetchData = async (parameter) => {
+  // fetch data---------------------start----------------------
+  const fetchData = async () => {
     dispatch({type:'START_FETCH'});
-    let url;
-      if (parameter === 'SET_CURRENT_WEATHER'){
-        url = `${currentWeatherUrl}${state.currentCity.id}?apikey=${APIKey}`;
-      }
-      if (parameter === 'SET_FORECAST') {
-        url = `${forecastUrl}${state.currentCity.id}?apikey=${APIKey}&metric=true`;
-      }
-      if (parameter === 'SET_GEO_LOCATION') {
-        url = `${geoLocationUrl}${APIKey}&q=${state.geoLocation.location}`;
-      }
+    if (state.geoLocation.success) {
       try {
-        const response = await fetch(url);
+        const response = await fetch (`${geoLocationUrl}${APIKeys[state.keyNum]}&q=${state.geoLocation.location}`);
         if (response.status >= 200 && response.status <= 299){
           const data = await response.json();
-          dispatch({type:parameter, payload:data});
-        } else {
-          dispatch({type:'SET_ERROR', payload:response.statusText});
+          dispatch({type:'SET_CITY_BY_GEO_LOCATION', payload:data});
+        }else {
+          dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
         }
-      } catch (error) {   
+        return;
+      } catch (error) {
         dispatch({type:'SET_ERROR', payload:error.message});
       }
+      return;
+    }
+    await Promise.allSettled ([
+      fetch(`${currentWeatherUrl}${state.currentCity.id}?apikey=${APIKeys[state.keyNum]}`),
+      fetch(`${forecastUrl}${state.currentCity.id}?apikey=${APIKeys[state.keyNum]}&metric=true`)
+    ])
+    .then (async(results) => {
+      const [currentWeather, forecast] = results;
+      if (currentWeather.status === 'fulfilled'){
+        const data = await currentWeather.value.json();
+        dispatch({type:'SET_CURRENT_WEATHER', payload:data});
+      } else {
+        dispatch({type:'CHANGE_API_KEY', payload:currentWeather.reason.message});
+        return;
+      }
+      if (forecast.status === 'fulfilled'){
+        const data = await forecast.value.json();
+        dispatch({type:'SET_FORECAST', payload:data});
+      } else {
+        dispatch({type:'CHANGE_API_KEY', payload:forecast.reason.message});
+      }
+    })
+    .catch((error) => {
+      dispatch({type:'SET_ERROR', payload:error.message});
+    })
   }
   const fetchSuggestions = async (controller) => {
     if (state.input){
       dispatch({type:'LOAD_SUGGESTIONS'});
-        try {
-          const response = await fetch(`${searchAutoCompleteUrl}${APIKey}&q=${state.input}`, {signal: controller.signal});
-          if (response.status >= 200 && response.status <= 299) {
-            const data = await response.json();
-            dispatch({type:'SET_SUGGESTIONS', payload:data});
-          } else {
-            dispatch({type:'SET_ERROR', payload:response.statusText});
-          }
-        } catch (error) {
-          if (error.name !== 'AbortError'){
-            dispatch({type:'SET_ERROR', payload:error.message});
-          }
+      try {
+        const response = await fetch(`${searchAutoCompleteUrl}${APIKeys[state.keyNum]}&q=${state.input}`, {signal: controller.signal});
+        if (response.status >= 200 && response.status <= 299) {
+          const data = await response.json();
+          dispatch({type:'SET_SUGGESTIONS', payload:data});
+        } else {
+          dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
         }
+      } catch (error) {
+        if (error.name !== 'AbortError'){
+          dispatch({type:'SET_ERROR', payload:error.message});
+        }
+      }
     } else {
       dispatch ({type:'STOP_SUGGESTION_LOADING'});
     }
   }
   const fetchFavorites = () => {
-      try {
-        dispatch({type:'START_FETCH_FAVORITES'});
-          state.favorites.forEach((city,i) => {
-            let url = `${currentWeatherUrl}${city.id}?apikey=${APIKey}`;
-            fetchFavorite(url, city, i);
-          });
-          dispatch({type:'FETCH_SUCCESS'});
-      } catch (error) {
-        dispatch({type:'SET_ERROR', payload:error.message});    
-      }
+    dispatch({type:'START_FETCH_FAVORITES'});
+    state.favorites.forEach((city,i) => {
+      let url = `${currentWeatherUrl}${city.id}?apikey=${APIKeys[state.keyNum]}`;
+      fetchFavorite(url, city, i);
+    });
+    dispatch({type:'FETCH_SUCCESS'});
   }
+  const fetchFavorite = async (url, city, i) => {
+    try {
+      const response = await fetch(url);
+      if (response.status >= 200 && response.status <= 299) {
+        const data = await response.json();
+        dispatch({type:'SET_FAVORITES_WEATHER', payload:{data, city, i}});
+      } else {
+        dispatch({type:'CHANGE_API_KEY', payload:response.statusText});
+      }
+    } catch (error) {
+      dispatch({type:'SET_ERROR', payload:error.message});
+    }
+  }
+  // fetch data---------------------end----------------------
   const setCurrentCity = (city) => {
     dispatch({type:'SET_CURRENT_CITY', payload:city});
   }
@@ -108,11 +137,6 @@ export const AppProvider = ({children}) => {
   }
   const removeFromFavorites = (cityName) => {
     dispatch({type:'REMOVE_FROM_FAVORITES', payload:cityName});
-  }
-  const fetchFavorite = async (url, city, i) => {
-    const response = await fetch(url);
-    let data = await response.json();
-    dispatch({type:'SET_FAVORITES_WEATHER', payload:{data, city, i}});
   }
   const showTemp = (temp) => {
     if(state.isCelsius && temp) {
@@ -147,36 +171,34 @@ export const AppProvider = ({children}) => {
   const toggleTheme = () => {
     dispatch({type:'TOGGLE_THEME'});
   }
-  useEffect(() => {
-    getLocation();
-    if (state.geoLocation.success){
-      fetchData('SET_GEO_LOCATION');
-    }
-    // eslint-disable-next-line
-  }, [state.geoLocation.success]);
-  useEffect(() => {
-    fetchData('SET_CURRENT_WEATHER');
-    fetchData('SET_FORECAST');
-    // eslint-disable-next-line
-  }, [state.currentCity]);
-  useEffect(() => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      fetchSuggestions(controller);
-    }, 500);
-    return(() => {
-      clearTimeout(timer);
-      controller.abort();
-    }) 
-    // eslint-disable-next-line
-  }, [state.input]);
-  useEffect(() => {
-    if (state.isDarkMode) {
-      document.documentElement.className = 'dark-theme';
-    } else {
-      document.documentElement.className = 'light-theme';
-    }
-  }, [state.isDarkMode]);
+    // useEffects---------------------start----------------------
+
+    useEffect(() => {
+      fetchData();
+      // eslint-disable-next-line
+    }, [state.currentCity, state.keyNum, state.geoLocation.success]);
+    useEffect(() => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => {
+        fetchSuggestions(controller);
+      }, 500);
+      return(() => {
+        clearTimeout(timer);
+        controller.abort();
+      }) 
+      // eslint-disable-next-line
+    }, [state.input]);
+    useEffect(() => {
+      if (state.isDarkMode) {
+        document.documentElement.className = 'dark-theme';
+      } else {
+        document.documentElement.className = 'light-theme';
+      }
+    }, [state.isDarkMode]);
+    useEffect(() => {
+      getLocation();
+    }, []);
+  // useEffects---------------------end----------------------
   return <AppContext.Provider value={{
     ...state,
     setInput,
@@ -196,4 +218,3 @@ export const AppProvider = ({children}) => {
 export const useAppContext = () => {
   return useContext(AppContext);
 }
-

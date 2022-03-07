@@ -15,10 +15,10 @@ const Favorites = () => {
     </div>
   }
   if (isError.show) {
-    return <>
-      <h1>oops, something went wrong</h1>
+    return <div className='section-center section'>
+      <h1>Ooops, something went wrong</h1>
       <p>{isError.message}</p>
-    </>
+    </div>
   }
   return <div className='section section-center'>
     {favoritesWeather.length 

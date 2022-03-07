@@ -30,7 +30,7 @@ const Home = () => {
   }
   if (isError.show) {
     return <div className='section-center section'>
-      <h1>oops, something went wrong</h1>
+      <h1>Ooops, something went wrong</h1>
       <p>{isError.message}</p>
     </div>
   }
