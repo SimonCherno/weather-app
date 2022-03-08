@@ -86,12 +86,12 @@ const reducer = (state, action) => {
         }
     }
     if (action.type === 'SET_FAVORITES_WEATHER') {
-        const {data, city} = action.payload;
+        const [data, city] = action.payload;
         const {
             WeatherText:weatherText,
             WeatherIcon:weatherIcon, 
             Temperature:{Metric:{Value:temperature}}
-        } = data[0];
+        } = data;
         let favoriteWeather = {
             label: city.label,
             id: city.id,
