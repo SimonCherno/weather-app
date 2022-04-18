@@ -1,4 +1,4 @@
-import { APIKeys } from "../assets/assets";
+import { APIKeys } from "./utils";
 const reducer = (state, action) => {
     if (action.type === 'SET_INPUT') {
         return {
@@ -153,11 +153,6 @@ const reducer = (state, action) => {
     if (action.type === 'SET_IS_TEXT_ERROR'){
         return {
             ...state, isTextError:action.payload
-        }
-    }
-    if (action.type === 'TOGGLE_THEME'){
-        return {
-            ...state, isDarkMode: !state.isDarkMode
         }
     }
     if (action.type === 'CHANGE_API_KEY'){

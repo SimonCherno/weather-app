@@ -1,9 +1,9 @@
 import React from 'react';
-import './App.css';
+import './styles/App.css';
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import Home from './pages/Home';
-import Favorites from './pages/Favorites';
-import {AppProvider} from './context/AppProvider';
+import Home from './routes/Home';
+import Favorites from './routes/Favorites';
+import {AppProvider} from './services/AppProvider';
 
 function App() {
   return <>

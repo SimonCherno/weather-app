@@ -1,23 +1,41 @@
 /* global */
 
-/* light theme */
-.light-theme {
-  --clr-bcg: #edf0f5;
-  --clr-font: #2e2a29;
-  --clr-primary: #88aefa;
+/* main theme */
+.main-theme {
+  --clr-bcg: #83b1ff;
+  --clr-font: #ffffff;
+  --clr-primary: #00000052;
 }
-/* dark theme */
-.dark-theme {
-  --clr-bcg: #252525;
-  --clr-font: #d4d4d4;
-  --clr-primary: #202020;
-}
-
 body {
-  background-color: var(--clr-bcg);
   color: var(--clr-font);
   transition: all 0.5s linear;
-  min-width: 386px;
+  min-width: 375px;
+  position: relative;
+  min-height: 100vh;
+}
+.background{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden
+}
+.bcg-img{
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+.overlay{
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  background-color: #000000;
+  opacity: 0.3;
 }
 .section-center {
   margin: 0 auto;
@@ -55,7 +73,16 @@ h5 {
 }
 
 /* navbar */
-
+.link-icon{
+  font-size: 40px;
+  margin: 0 10px;
+  color: white;
+  transition: all 0.3s linear;
+}
+.link-icon:hover{
+  cursor: pointer;
+  transform: scale(1.1);
+}
 .right-corner {
   display: flex;
 }
@@ -83,6 +110,28 @@ h5 {
     justify-content: center;
   }
 }
+.degrees-wrapper{
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease-in;
+}
+.animation-wrapper{
+  position: fixed;
+  top: 150px;
+  right: -52px;
+}
+.arrow{
+  display: block;
+  font-size: 15px;
+}
+.arrow-wrapper :hover{
+  cursor: pointer;
+}
+.show-degrees{
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in;
+}
+
 
 /* home */
 .text-error-wrapper {
@@ -114,7 +163,7 @@ h5 {
     brightness(99%) contrast(82%);
 }
 .auto-complete-wrapper {
-  width: 250px;
+  width: 60%;
   z-index: 2;
 }
 .loading-suggestions {
@@ -131,13 +180,30 @@ h5 {
 }
 .header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   padding-bottom: 4rem;
 }
-.city {
+.favorite{
+}
+.heart-icon {
+  font-size: 40px;
+  color: rgb(255, 91, 91);
+  transition: all 0.3s linear;
+}
+
+.heart-icon:hover {
+  color: rgb(255, 52, 52);
+  cursor: pointer;
+  transform: scale(1.1);
+}
+.city-info {
   display: flex;
   align-items: center;
+}
+.city-info > * {
+  margin: 0 10px;
 }
 .filter-red {
   filter: invert(40%) sepia(61%) saturate(2916%) hue-rotate(337deg)
@@ -165,7 +231,7 @@ h5 {
   background-color: var(--clr-primary);
   padding: 0.5rem;
   border-radius: 5px;
-  box-shadow: 1px 1px 3px 1px rgb(133, 133, 133);
+  box-shadow: 1px 1px 3px 1px rgb(0, 0, 0);
   margin: 0.5rem;
   transition: all, 0.5s ease;
 }
@@ -184,12 +250,12 @@ h5 {
 .city-card-container:hover {
   transform: scale(1.03);
   color: var(--clr-font);
-  box-shadow: 1px 1px 3px 2px rgb(170, 170, 170);
+  box-shadow: 1px 1px 3px 2px rgb(0, 0, 0);
 }
 .weekday,
 .city-name {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 6rem;
 }
 .daycard-content {
   display: flex;

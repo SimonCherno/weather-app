@@ -1,53 +1,45 @@
 import React from 'react';
-import { useAppContext } from '../context/AppProvider';
-import { Link } from 'react-router-dom';
+import { useAppContext } from '../services/AppProvider';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
+import { AiFillHome } from 'react-icons/ai';
+import { BsFillBookmarkHeartFill } from 'react-icons/bs';
+import { setBackground } from '../services/utils';
+import DegreesSelctor from './DegreesSelector';
 
-const withNavbar = (Component, location) => {
+const withNavbar = (Component) => {
     const Navbar = () => {
-        const {toggleDegrees, toggleTheme, isDarkMode} = useAppContext();
+        const {toggleDegrees, currentWeather} = useAppContext();
+        const navigate = useNavigate();
+        let image;
+        if (currentWeather.weatherIcon){
+            const background = setBackground(currentWeather.weatherIcon);
+            image = require(`../assets/${background}.jpg`).default;
+        }
         return <>
+            <div className="background">
+                {image && <img src={image} alt='background' className='bcg-img' />}
+                <div className="overlay"></div>
+            </div>
             <nav className='navbar'>
                 <div className="container-fluid section-center">
-                    <h1>weather app</h1>
+                    <img src={logo} alt='logo' className='logo' />
                     <div className="right-corner">
                         <div className="btn-group nav-btns">
-                            <Link 
-                                className={location === 'home' ? 'btn btn-primary active' : 'btn btn-primary'} 
-                                to='/'
-                            >Home</Link>
-                            <Link 
-                                className={location === 'favorites' ? 'btn btn-primary active' : 'btn btn-primary'} 
-                                to='/favorites'
-                            >Favorites</Link>
+                            <AiFillHome 
+                                className='link-icon'
+                                onClick={() => {
+                                    navigate('/')
+                                }}
+                            />
+                            <BsFillBookmarkHeartFill 
+                                className='link-icon'
+                                onClick={() => {
+                                    navigate('/favorites')
+                                }}
+                            />
                         </div>
-                        <div className="btn-group me-2  nav-btns">
-                            <button 
-                                onClick={() => toggleDegrees ('C')} 
-                                className="btn btn-outline-secondary"
-                            >C</button>
-                            <button 
-                                onClick={() => toggleDegrees ('F')} 
-                                className="btn btn-outline-secondary"
-                            >F</button>
-                        </div>
-                            <div className="form-check form-switch darkmode-switch">
-                                <div className="label-wrapper">
-                                    <label 
-                                        className="form-check-label" 
-                                        htmlFor="flexSwitch"
-                                        >Dark mode</label>
-                                </div>
-                                <div className="input-wrapper">
-                                    <input 
-                                        className="form-check-input input" 
-                                        type="checkbox" 
-                                        role="switch" 
-                                        id="flexSwitch" 
-                                        checked={isDarkMode ? true : false} 
-                                        onChange={toggleTheme}
-                                    />
-                                </div>
-                            </div>
+                        <DegreesSelctor toggleDegrees={toggleDegrees}/>
                     </div>
                 </div>
             </nav>

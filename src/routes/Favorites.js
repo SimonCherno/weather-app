@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useAppContext } from '../context/AppProvider';
+import { useAppContext } from '../services/AppProvider';
 import CityCard from '../components/CityCard';
 import withNavbar from '../components/withNavbar';
 
@@ -30,4 +30,4 @@ const Favorites = () => {
     </div>;
 };
 
-export default withNavbar(Favorites, 'favorites');
+export default withNavbar(Favorites);

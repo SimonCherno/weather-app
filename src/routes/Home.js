@@ -1,12 +1,10 @@
 import React from 'react';
-import { useAppContext } from '../context/AppProvider';
+import { useAppContext } from '../services/AppProvider';
 import DayCard from '../components/DayCard';
 import withNavbar from '../components/withNavbar';
-import heart from '../assets/heart.svg';
-import heartFill from '../assets/heart-fill.svg';
-import search from '../assets/search.svg';
 import AutoComplete from '../components/AutoComplete';
-import { APIKeys } from '../assets/assets';
+import { APIKeys } from '../services/utils';
+import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 
 const Home = () => {
   const {
@@ -22,7 +20,6 @@ const Home = () => {
     showIcon,
     isSuggestionLoading,
     isTextError,
-    isDarkMode,
     changeApiKey,
     keyNum,
   } = useAppContext();
@@ -42,7 +39,6 @@ const Home = () => {
     <div className="section-center section">
       <div className='search-bar'>
         {isTextError && <p className='text-error'>English letters only</p>}
-        <img src={search} alt='search' className={`search-img ${isDarkMode ? 'search-dark-img' : 'search-light-img'}`}/>
         <div className="auto-complete-wrapper">
             <AutoComplete />
         </div>
@@ -51,31 +47,28 @@ const Home = () => {
         </div>
       </div>
         <div className="header">
-          <div className="city">
-            <img className='city-icon' src={showIcon(currentWeather.weatherIcon)} alt="weather-icon" />
-            <div className="city-info">
-              <h4>{currentCity.label}</h4>
-              <h4>{showTemp(currentWeather.temperature)}</h4>
-            </div>
-          </div>
-          <div className="favorite">
-            {isFavorite() 
-              ? <button 
-                  className="btn btn-outline-danger favorite-btn" 
-                  onClick={() => removeFromFavorites(currentCity.id)}
-                >
-                  <img className='filter-red' src={heartFill} alt='heart-fill'></img> Remove From Favorites
-                </button>
-              : <button 
-                  className="btn btn-outline-danger favorite-btn" 
-                  onClick={addToFavorites}
-                >
-                  <img className='filter-red' src={heart} alt='heart'></img> add to favorites
-                </button>
-            }
-          </div>
+              <h2>{currentCity.label}</h2>
+              <div className="city-info">
+                  <img className='city-icon' src={showIcon(currentWeather.weatherIcon)} alt="weather-icon" />
+                  <h3>{showTemp(currentWeather.temperature)}</h3>
+                <div className="favorite">
+                  {isFavorite() 
+                    ? <AiFillHeart  
+                        className="heart-icon" 
+                        onClick={() => removeFromFavorites(currentCity.id)}
+                      />
+                    : <AiOutlineHeart
+                        className="heart-icon" 
+                        onClick={addToFavorites}
+                      />
+                  }
+                </div>
+              </div>
+              <div className="city-info">
+                <h3>{currentWeather.weatherText}</h3>
+              </div>
+          
         </div>
-        <h1 className='weather-text'>{currentWeather.weatherText}</h1>
         <div className="forecast">
           {forecast.map((day, i) => <DayCard key={i} {...day} />)}
         </div>
@@ -83,4 +76,4 @@ const Home = () => {
   </div>;
 };
 
-export default withNavbar(Home, 'home');
+export default withNavbar(Home);

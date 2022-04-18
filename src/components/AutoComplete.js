@@ -1,7 +1,7 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { useAppContext } from '../context/AppProvider';
+import { useAppContext } from '../services/AppProvider';
 import { makeStyles, createStyles } from '@mui/styles';
 import { Popper } from '@mui/material';
 
@@ -10,10 +10,10 @@ const useStyles = makeStyles(() =>
     root: {
       "& .MuiAutocomplete-listbox": {
         color: "var(--clr-font)",
-        backgroundColor: "var(--clr-bcg)"
+        backgroundColor: "var(--clr-primary)"
       },
       "& .MuiPaper-root": {
-        backgroundColor: "var(--clr-bcg)",
+        backgroundColor: "var(--clr-primary)",
         "& .MuiAutocomplete-noOptions": {
           color: "var(--clr-font)"
         }
@@ -48,13 +48,15 @@ export default function ComboBox() {
       id="combo-box-demo"
       options={searchSuggestions}
       sx={{ 
-        width: 250,
         "& .MuiAutocomplete-inputRoot": {
           color: "var(--clr-font)",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "var(--clr-font)"
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "var(--clr-font)"
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: "var(--clr-font)"
           },
         },
@@ -71,7 +73,15 @@ export default function ComboBox() {
       onInputChange={(_, value) => {
         handleInput(value);  
       }}
-      renderInput={(params) => <TextField {...params} label="City" />}
+      renderInput={(params) => (
+        <TextField 
+          {...params} 
+          label="City"
+          InputLabelProps={{
+            style: { color: '#fff' },
+          }}
+        />
+      )}
       PopperComponent={CustomPopper}
     />
   </>
